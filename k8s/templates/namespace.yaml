@@ -4,7 +4,7 @@ kind: Object
 metadata:
   annotations:
     uptest.upbound.io/timeout: "60"
-  name: test-sample-namespace
+  name: test-sample-namespace-new
 spec:
   forProvider:
     manifest:
