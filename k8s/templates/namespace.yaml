@@ -13,5 +13,6 @@ spec:
       metadata:
         labels:
           example: "true"
+          test: "test"
   providerConfigRef:
     name: kubernetes-provider
