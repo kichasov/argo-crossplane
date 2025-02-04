@@ -1,0 +1,20 @@
+      # Patch disk size in composition from XR/Claim
+apiVersion: database.gcp.crossplane.io/v1beta1
+kind: CloudSQLInstance
+metadata:
+  name: my-postgresql-instance
+spec:
+  forProvider:
+    databaseVersion: POSTGRES_13
+    region: us-central1
+    settings:
+      tier: db-f1-micro
+      dataDiskType: PD_SSD
+      dataDiskSizeGb: 10
+      ipConfiguration:
+        ipv4Enabled: true
+  providerConfigRef:
+    name: provider-gcp-config
+  writeConnectionSecretToRef:
+    namespace: crossplane-system
+    name: my-postgresql-instance-credentials
