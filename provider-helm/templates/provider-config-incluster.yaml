@@ -1,5 +1,5 @@
 ## check provider-incluster.yaml for grant access
-apiVersion: helm.crossplane.io/v1beta1
+apiVersion: helm.crossplane.io/v1alpha1
 kind: ProviderConfig
 metadata:
   name: helm-provider
