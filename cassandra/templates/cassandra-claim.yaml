@@ -1,0 +1,12 @@
+apiVersion: crossplane.qubership.org/v1
+kind: Cassandra
+metadata:
+  # Claims in crossplane-system namespace
+  namespace: crossplane-system
+  name: cassandra
+spec:
+  # refer to the mysql composition
+  compositionRef:
+    name: cassandra-k8s
+  parameters:
+    namespace: MICRO
