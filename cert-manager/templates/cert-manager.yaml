@@ -6,17 +6,14 @@ spec:
   forProvider:
     insecureSkipTLSVerify: true
     chart:
-      name: hello
-      repository: https://www.kleinloog.ch/hello-helm/
-      version: 0.3.0
+      name: jetstack/cert-manager
+      repository: https://charts.jetstack.io
+      version:  v1.16.3
     namespace: cert-manager
     set:
       - name: prometheus.enabled
         value: 'true'
       - name: crds.enabled
         value: 'true'       
-    values:
-      service:
-        type: ClusterIP
   providerConfigRef:
     name: helm-provider
