@@ -5,9 +5,9 @@ metadata:
 spec:
   forProvider:
     chart:
-      name: 'jetstack/cert-manager'
+      name: cert-manager/cert-manager
       repository: https://charts.jetstack.io
-      version: v1.16.3
+      version: 1.17.0
     namespace: cert-manager
     set:
       - name: prometheus.enabled
