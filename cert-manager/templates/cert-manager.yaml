@@ -1,0 +1,21 @@
+apiVersion: helm.crossplane.io/v1beta1
+kind: Release
+metadata:
+  name: cert-manager
+spec:
+  forProvider:
+    chart:
+      name: jetstack/cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.16.3
+    namespace: cert-manager
+    set:
+      - name: prometheus.enabled
+        value: true
+      - name: crds.enabled
+        value: true       
+    values:
+      service:
+        type: ClusterIP
+  providerConfigRef:
+    name: helm-provider
