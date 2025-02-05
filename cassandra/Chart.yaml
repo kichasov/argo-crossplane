@@ -1,0 +1,4 @@
+apiVersion: v2
+name: cassandra-chart
+version: 1.0.0
+description: "cassandra helm chart"
