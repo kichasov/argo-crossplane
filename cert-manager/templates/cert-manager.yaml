@@ -4,6 +4,7 @@ metadata:
   name: cert-manager
 spec:
   forProvider:
+    insecureSkipTLSVerify: true
     chart:
       name: jetstack/cert-manager
       repository: https://charts.jetstack.io
