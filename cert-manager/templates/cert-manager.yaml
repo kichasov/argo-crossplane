@@ -6,9 +6,9 @@ spec:
   forProvider:
     insecureSkipTLSVerify: true
     chart:
-      name: jetstack/cert-manager
-      repository: https://charts.jetstack.io
-      version: v1.17.0
+      name: hello
+      repository: https://www.kleinloog.ch/hello-helm/
+      version: 0.3.0
     namespace: cert-manager
     set:
       - name: prometheus.enabled
