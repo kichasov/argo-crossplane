@@ -11,9 +11,9 @@ spec:
     namespace: cert-manager
     set:
       - name: prometheus.enabled
-        value: true
+        value: 'true'
       - name: crds.enabled
-        value: true       
+        value: 'true'       
     values:
       service:
         type: ClusterIP
