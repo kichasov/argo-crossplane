@@ -5,7 +5,7 @@ metadata:
 spec:
   forProvider:
     chart:
-      name: cert-manager/cert-manager
+      name: jetstack//cert-manager
       repository: https://charts.jetstack.io
       version: v1.17.0
     namespace: cert-manager
