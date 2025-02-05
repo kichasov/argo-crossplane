@@ -1,0 +1,12 @@
+apiVersion: crossplane.qubership.org/v1
+kind: Jaeger
+metadata:
+  namespace: crossplane-system
+  name: jaeger-local
+spec:
+  compositionRef:
+    name: jaeger-k8s
+  credentials:
+    secretRef:
+      name: cassandra-cluster-superuser
+      namespace: k8ssandra-operator
