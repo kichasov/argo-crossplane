@@ -6,7 +6,7 @@ spec:
   forProvider:
     insecureSkipTLSVerify: true
     chart:
-      name: jetstack/cert-manager
+      name: cert-manager
       repository: https://charts.jetstack.io
       version:  v1.16.3
     namespace: cert-manager
