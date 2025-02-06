@@ -1,0 +1,12 @@
+apiVersion: crossplane.qubership.org/v1
+kind: Opentelemetry
+metadata:
+  namespace: crossplane-system
+  name: opentelemetry
+spec:
+  compositionRef:
+    name: opentelemetry-k8s
+  credentials:
+    secretRef:
+      name: not-used
+      namespace: not-used
