@@ -10,7 +10,6 @@ spec:
       repository: https://charts.jetstack.io
       version:  v1.16.3
     namespace: cert-manager
-    skipCreateNamespace: true
     set:
       - name: prometheus.enabled
         value: 'true'
