@@ -9,4 +9,6 @@ spec:
   compositionRef:
     name: cassandra-k8s
   parameters:
-    namespace: MICRO
+    storageClassName: local-path
+    storageSize: 5Gi
+    heapSize: 512M
