@@ -7,42 +7,6 @@ spec:
     apiVersion: crossplane.qubership.org/v1
     kind: XJaeger
   resources:
-    - name: namespace-jaeger
-      base:
-        apiVersion: kubernetes.crossplane.io/v1alpha2
-        kind: Object
-        spec:
-          forProvider:
-            manifest:
-              apiVersion: v1
-              kind: Namespace
-              metadata:
-                name: jaeger
-                labels:
-                  example: "true"
-          providerConfigRef:
-            name: kubernetes-provider
-    - name: jaeger-secret
-      base:
-        apiVersion: kubernetes.crossplane.io/v1alpha2
-        kind: Object
-        spec:
-          forProvider:
-            manifest:
-              apiVersion: v1
-              kind: Secret
-              metadata:
-                name: ghcr-io-secret
-                namespace: jaeger
-              type: kubernetes.io/dockerconfigjson
-              data:
-                .dockerconfigjson: stub
-          providerConfigRef:
-            name: kubernetes-provider
-      patches:
-      - type: FromCompositeFieldPath
-        fromFieldPath: spec.parameters.imagePullSecret
-        toFieldPath: spec.forProvider.manifest.data[".dockerconfigjson"]
     - name: helm-release
       base:
         apiVersion: helm.crossplane.io/v1beta1
