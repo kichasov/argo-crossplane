@@ -81,3 +81,42 @@ spec:
                         exporters: [prometheusremotewrite, debug]
           providerConfigRef:
             name: kubernetes-provider
+    - name: robot-shop-namespace
+      base:
+        apiVersion: kubernetes.crossplane.io/v1alpha2
+        kind: Object
+        spec:
+          forProvider:
+            manifest:
+              apiVersion: v1
+              kind: Namespace
+              metadata:
+                name: robot-shop
+                labels:
+                  example: "true"
+          providerConfigRef:
+            name: kubernetes-provider          
+    - name: opentelemetry-collector
+      base:
+        apiVersion: kubernetes.crossplane.io/v1alpha2
+        kind: Object
+        spec:
+          forProvider:
+            manifest:
+              apiVersion: opentelemetry.io/v1alpha1
+              kind: Instrumentation
+              metadata:
+                name: otel-instrumentation
+                namespace: robot-shop
+              spec:
+                exporter:
+                  endpoint: http://otel-collector-collector:4317
+                propagators:
+                  - tracecontext
+                  - baggage
+                  - b3
+                sampler:
+                  type: parentbased_traceidratio
+                  argument: "1.0"
+          providerConfigRef:
+            name: kubernetes-provider
