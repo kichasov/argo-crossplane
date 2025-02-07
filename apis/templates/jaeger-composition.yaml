@@ -1,0 +1,56 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: jaeger-k8s
+spec:
+  compositeTypeRef:
+    apiVersion: crossplane.qubership.org/v1
+    kind: XJaeger
+  resources:
+    - name: helm-release
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:
+          providerConfigRef:
+            name: helm-provider
+          forProvider:
+            chart:
+              name: qubership-jaeger
+              repository: https://ildarminaev.github.io/jaeget-helm-test
+              version: "0.20.2"
+            namespace: jaeger
+            values: {}
+            set:
+            - name: jaeger.prometheusMonitoringDashboard
+              value: 'false'
+            - name: jaeger.prometheusMonitoring
+              value: 'false'
+            - name: collector.imagePullSecrets[0].name
+              value: ghcr-io-secret
+            - name: query.ingress.install
+              value: 'true'
+            - name: query.ingress.host
+              value: query.jaeger.localhost.localdomain
+            - name: collector.ingress.install
+              value: 'true'
+            - name: collector.ingress.host
+              value: collector.jaeger.localhost.localdomain
+            - name: cassandraSchemaJob.host
+              value: cassandra-cluster-dc1-service.k8ssandra-operator.svc.cluster.local
+            - name: jaeger.storage.type
+              value: cassandra
+            - name: cassandraSchemaJob.existingSecret
+              value: "false"
+            - name: cassandraSchemaJob.username
+              valueFrom:
+                secretKeyRef: 
+                  key: username
+                  name: cassandra-cluster-superuser
+                  namespace: k8ssandra-operator
+            - name: cassandraSchemaJob.password
+              valueFrom:
+                secretKeyRef: 
+                  key: password
+                  name: cassandra-cluster-superuser
+                  namespace: k8ssandra-operator
