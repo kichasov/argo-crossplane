@@ -15,12 +15,11 @@ spec:
       served: true
       referenceable: true
       schema:
-        schema:
-          openAPIV3Schema:
-            type: object
-            properties:
-              spec:
-                type: object
-                properties:
-                  stub:
-                    type: string
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                stub:
+                  type: string
