@@ -29,20 +29,18 @@ spec:
           spec:
             type: object
             properties:
-              # Size will be a user input
               parameters:
                 type: object
                 properties:
-                  namespace:
+                  storageClassName:
+                    type: string
+                  storageSize:
+                    type: string
+                  heapSize:
                     type: string
                 required:
-                - namespace
+                  - storageClassName
+                  - storageSize
+                  - heapSize
             required:
             - parameters
-          status:
-            type: object
-            # Recourse zone - status patch parameter.
-            properties:
-              status:
-                description: status.
-                type: string
