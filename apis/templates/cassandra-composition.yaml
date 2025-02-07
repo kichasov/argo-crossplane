@@ -48,15 +48,15 @@ spec:
                     size: 1
                     storageConfig:
                       cassandraDataVolumeClaimSpec:
-                        storageClassName: local-path1
+                        storageClassName: stub
                         accessModes:
                           - ReadWriteOnce
                         resources:
                           requests:
-                            storage: 5Gi1
+                            storage: stub
                     config:
                       jvmOptions:
-                        heapSize: 512M1
+                        heapSize: stub
         providerConfigRef:
           name: kubernetes-provider
     patches:
