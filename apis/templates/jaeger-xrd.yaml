@@ -21,15 +21,12 @@ spec:
             spec:
               type: object
               properties:
-                credentials:
+                parameters:
                   type: object
                   properties:
-                    parameters:
-                      type: object
-                      properties:
-                        imagePullSecret:
-                          type: string
-                      required:
-                        - imagePullSecret
+                    imagePullSecret:
+                      type: string
                   required:
-                  - parameters
+                    - imagePullSecret
+              required:
+                - parameters
