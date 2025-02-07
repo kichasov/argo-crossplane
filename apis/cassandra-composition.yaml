@@ -1,0 +1,62 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: cassandra-k8s
+  labels:
+    # An optional label used for easy discovery
+    crossplane.io/xrd: cassandras.crossplane.qubership.org
+spec:
+  # Refer to an XRD API version
+  compositeTypeRef:
+    apiVersion: crossplane.qubership.org/v1
+    kind: XCassandra
+  writeConnectionSecretsToNamespace: crossplane-system
+  resources:
+    # Provide configuration for Postgres resource
+  - name: helm-cassandra-operator
+    base:
+      apiVersion: helm.crossplane.io/v1beta1
+      kind: Release
+      spec:
+        # reference to GCP credentials
+        providerConfigRef:
+          name: helm-provider
+        forProvider:
+          insecureSkipTLSVerify: true
+          chart:
+            name: k8ssandra-operator
+            repository: https://helm.k8ssandra.io/stable
+            version:  1.21.0
+          namespace: k8ssandra-operator
+  - name: cassandra-cluster
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha2
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: k8ssandra.io/v1alpha1
+            kind: K8ssandraCluster
+            metadata:
+              name: cassandra-cluster
+              namespace: k8ssandra-operator
+            spec:
+              cassandra:
+                serverVersion: "4.0.1"
+                datacenters:
+                  - metadata:
+                      name: dc1
+                    size: 1
+                    storageConfig:
+                      cassandraDataVolumeClaimSpec:
+                        storageClassName: local-path
+                        accessModes:
+                          - ReadWriteOnce
+                        resources:
+                          requests:
+                            storage: 5Gi
+                    config:
+                      jvmOptions:
+                        heapSize: 512M
+        providerConfigRef:
+          name: kubernetes-provider
