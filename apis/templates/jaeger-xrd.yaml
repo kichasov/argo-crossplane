@@ -14,3 +14,4 @@ spec:
     - name: v1
       served: true
       referenceable: true
+    schema:
