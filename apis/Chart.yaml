@@ -1,0 +1,4 @@
+apiVersion: v2
+name: apis-chart
+version: 1.0.0
+description: "apis helm chart"
