@@ -1,0 +1,83 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: opentelemetry-k8s
+spec:
+  compositeTypeRef:
+    apiVersion: crossplane.qubership.org/v1
+    kind: XOpentelemetry
+  resources:
+    - name: helm-opentelemetry-operator
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:
+          providerConfigRef:
+            name: helm-provider
+          forProvider:
+            chart:
+              name: opentelemetry-operator
+              repository: https://open-telemetry.github.io/opentelemetry-helm-charts
+              version: "0.79.0"
+            namespace: opentelemetry-operator-system
+            values: {}
+            set:
+            - name: manager.collectorImage.repository
+              value: "otel/opentelemetry-collector-contrib"
+            - name: manager.extraArgs
+              value: "{--enable-go-instrumentation=true,--enable-nginx-instrumentation=true}"
+    - name: opentelemetry-cluster
+      base:
+        apiVersion: kubernetes.crossplane.io/v1alpha2
+        kind: Object
+        spec:
+          forProvider:
+            manifest:
+              apiVersion: opentelemetry.io/v1beta1
+              kind: OpenTelemetryCollector
+              metadata:
+                name: otel-collector
+                namespace: robot-shop
+              spec:
+                config:
+                  receivers:
+                    otlp:
+                      protocols:
+                        grpc:
+                          endpoint: 0.0.0.0:4317
+                        http:
+                          endpoint: 0.0.0.0:4318
+                  processors:
+                    memory_limiter:
+                      check_interval: 1s
+                      limit_percentage: 75
+                      spike_limit_percentage: 15
+                    batch:
+                      send_batch_size: 10000
+                      timeout: 10s
+                  exporters:
+                    debug: {}
+                    otlp:
+                      endpoint: "jaeger-collector.jaeger.svc.cluster.local:4317"
+                      tls:
+                        insecure: true
+                    prometheus:
+                      endpoint: "0.0.0.0:8889"
+                    prometheusremotewrite:  
+                      endpoint: "http://vmsingle-k8s-vmsingle.monitoring.svc.cluster.local:8429/api/v1/write"
+                      tls:
+                        insecure: true
+                      headers:
+                        Content-Type: application/x-protobuf
+                  service:
+                    pipelines:
+                      traces:
+                        receivers: [otlp]
+                        processors: [memory_limiter, batch]
+                        exporters: [debug, otlp]
+                      metrics:
+                        receivers: [otlp]
+                        processors: [memory_limiter, batch]
+                        exporters: [prometheusremotewrite, debug]
+          providerConfigRef:
+            name: kubernetes-provider
