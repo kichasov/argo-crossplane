@@ -10,7 +10,6 @@ spec:
   compositeTypeRef:
     apiVersion: crossplane.qubership.org/v1
     kind: XCassandra
-  writeConnectionSecretsToNamespace: crossplane-system
   resources:
     # Provide configuration for Postgres resource
   - name: helm-cassandra-operator
@@ -22,12 +21,12 @@ spec:
         providerConfigRef:
           name: helm-provider
         forProvider:
-          insecureSkipTLSVerify: true
           chart:
             name: k8ssandra-operator
             repository: https://helm.k8ssandra.io/stable
             version:  1.21.0
           namespace: k8ssandra-operator
+          wait: true
   - name: cassandra-cluster
     base:
       apiVersion: kubernetes.crossplane.io/v1alpha2
@@ -49,14 +48,26 @@ spec:
                     size: 1
                     storageConfig:
                       cassandraDataVolumeClaimSpec:
-                        storageClassName: local-path
+                        storageClassName: local-path1
                         accessModes:
                           - ReadWriteOnce
                         resources:
                           requests:
-                            storage: 5Gi
+                            storage: 5Gi1
                     config:
                       jvmOptions:
-                        heapSize: 512M
+                        heapSize: 512M1
         providerConfigRef:
           name: kubernetes-provider
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.storageClassName
+      toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].storageConfig.cassandraDataVolumeClaimSpec.storageClassName
+     patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.storageSize
+      toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].storageConfig.cassandraDataVolumeClaimSpec.resources.requests.storage
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.heapSize
+      toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].config.jvmOptions.heapSize
