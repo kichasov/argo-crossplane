@@ -24,10 +24,12 @@ spec:
                 credentials:
                   type: object
                   properties:
-                    secretRef:
+                    parameters:
                       type: object
                       properties:
-                        name:
+                        imagePullSecret:
                           type: string
-                        namespace:
-                          type: string
+                      required:
+                        - imagePullSecret
+                  required:
+                  - parameters
