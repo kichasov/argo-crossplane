@@ -63,11 +63,9 @@ spec:
     - type: FromCompositeFieldPath
       fromFieldPath: spec.parameters.storageClassName
       toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].storageConfig.cassandraDataVolumeClaimSpec.storageClassName
-     patches:
     - type: FromCompositeFieldPath
       fromFieldPath: spec.parameters.storageSize
       toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].storageConfig.cassandraDataVolumeClaimSpec.resources.requests.storage
-    patches:
     - type: FromCompositeFieldPath
       fromFieldPath: spec.parameters.heapSize
       toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].config.jvmOptions.heapSize
