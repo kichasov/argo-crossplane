@@ -6,5 +6,3 @@ metadata:
 spec:
   compositionRef:
     name: jaeger-k8s
-  parameters:
-    imageCredentials: {{ template "imagePullSecret" . }}
