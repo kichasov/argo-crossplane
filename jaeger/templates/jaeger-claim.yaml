@@ -2,7 +2,7 @@ apiVersion: crossplane.qubership.org/v1
 kind: Jaeger
 metadata:
   namespace: crossplane-system
-  name: jaeger-local
+  name: jaeger
 spec:
   compositionRef:
-    name: jaeger-k8s
+    name: jaeger
