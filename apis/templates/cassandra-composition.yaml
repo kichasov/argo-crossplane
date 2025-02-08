@@ -1,71 +1,86 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: cassandra-k8s
-  labels:
-    # An optional label used for easy discovery
-    crossplane.io/xrd: cassandras.crossplane.qubership.org
+  name: cassandra
 spec:
-  # Refer to an XRD API version
   compositeTypeRef:
     apiVersion: crossplane.qubership.org/v1
     kind: XCassandra
-  resources:
-    # Provide configuration for Postgres resource
-  - name: helm-cassandra-operator
-    base:
-      apiVersion: helm.crossplane.io/v1beta1
-      kind: Release
-      spec:
-        # reference to GCP credentials
-        providerConfigRef:
-          name: helm-provider
-        forProvider:
-          chart:
-            name: k8ssandra-operator
-            repository: https://helm.k8ssandra.io/stable
-            version:  1.21.0
-          namespace: k8ssandra-operator
-          wait: true
-  - name: cassandra-cluster
-    base:
-      apiVersion: kubernetes.crossplane.io/v1alpha2
-      kind: Object
-      spec:
-        forProvider:
-          manifest:
-            apiVersion: k8ssandra.io/v1alpha1
-            kind: K8ssandraCluster
-            metadata:
-              name: cassandra-cluster
+  mode: Pipeline
+  pipeline:
+  - step: patch-and-transform
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: cassandra
+        base:
+          apiVersion: helm.crossplane.io/v1beta1
+          kind: Release
+          spec:
+            forProvider:
+              chart:
+                name: k8ssandra-operator
+                repository: https://helm.k8ssandra.io/stable
+                version:  1.21.0
               namespace: k8ssandra-operator
-            spec:
-              cassandra:
-                serverVersion: "4.0.1"
-                datacenters:
-                  - metadata:
-                      name: dc1
-                    size: 1
-                    storageConfig:
-                      cassandraDataVolumeClaimSpec:
-                        storageClassName: stub
-                        accessModes:
-                          - ReadWriteOnce
-                        resources:
-                          requests:
-                            storage: stub
-                    config:
-                      jvmOptions:
-                        heapSize: stub
-        providerConfigRef:
-          name: kubernetes-provider
-    patches:
-    - type: FromCompositeFieldPath
-      fromFieldPath: spec.parameters.storageClassName
-      toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].storageConfig.cassandraDataVolumeClaimSpec.storageClassName
-    - type: FromCompositeFieldPath
-      fromFieldPath: spec.parameters.storageSize
-      toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].storageConfig.cassandraDataVolumeClaimSpec.resources.requests.storage
-    - type: FromCompositeFieldPath
-      fromFieldPath: spec.parameters.heapSize
-      toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].config.jvmOptions.heapSize
+              wait: true
+            providerConfigRef:
+              name: helm-provider
+  - step: automatically-detect-readiness-casandra
+    functionRef:
+      name: function-auto-ready
+  - step: cassandra-cluster
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: cassandra-cluster
+        base:
+          apiVersion: kubernetes.crossplane.io/v1alpha2
+          kind: Object
+          spec:
+            forProvider:
+              manifest:
+                apiVersion: k8ssandra.io/v1alpha1
+                kind: K8ssandraCluster
+                metadata:
+                  name: cassandra-cluster
+                  namespace: k8ssandra-operator
+                spec:
+                  cassandra:
+                    serverVersion: "4.0.1"
+                    datacenters:
+                      - metadata:
+                          name: dc1
+                        size: 1
+                        storageConfig:
+                          cassandraDataVolumeClaimSpec:
+                            storageClassName: stub
+                            accessModes:
+                              - ReadWriteOnce
+                            resources:
+                              requests:
+                                storage: stub
+                        config:
+                          jvmOptions:
+                            heapSize: stub
+            providerConfigRef:
+              name: kubernetes-provider
+        patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.parameters.storageClassName
+          toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].storageConfig.cassandraDataVolumeClaimSpec.storageClassName
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.parameters.storageSize
+          toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].storageConfig.cassandraDataVolumeClaimSpec.resources.requests.storage
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.parameters.heapSize
+          toFieldPath: spec.forProvider.manifest.spec.cassandra.datacenters[0].config.jvmOptions.heapSize
+  - step: automatically-detect-readiness-cassandra-cluster
+    functionRef:
+      name: function-auto-ready
