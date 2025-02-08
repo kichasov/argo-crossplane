@@ -1,4 +1,0 @@
-apiVersion: v2
-name: k8s-chart
-version: 1.0.0
-description: "k8s helm chart"
