@@ -1,0 +1,19 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata: 
+  name: xcertmanagers.crossplane.qubership.org
+spec:
+  group: crossplane.qubership.org
+  names:
+    kind: XCertManager
+    plural: xcertmanagers
+  claimNames:
+    kind: CertManager
+    plural: certmanagers
+  versions:
+  - name: v1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
