@@ -1,0 +1,8 @@
+apiVersion: crossplane.qubership.org/v1
+kind: CertManager
+metadata:
+  namespace: crossplane-system
+  name: cert-manager
+spec:
+  compositionRef:
+    name: cert-manager
