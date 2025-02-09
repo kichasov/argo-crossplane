@@ -104,7 +104,7 @@ spec:
                       name: cassandra-cluster-superuser
                       namespace: k8ssandra-operator
               wait: true
-              waitTimeout: 5m
+              waitTimeout: 15m
             providerConfigRef:
               name: helm-provider
   - step: automatically-detect-readiness
