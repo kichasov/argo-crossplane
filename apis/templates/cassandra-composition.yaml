@@ -30,7 +30,6 @@ spec:
                   namespace: cert-manager
             providerConfigRef:
               name: kubernetes-provider
-  pipeline:
   - step: observe-cert-manager-webhook
     functionRef:
       name: function-patch-and-transform
