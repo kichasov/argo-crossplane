@@ -227,7 +227,7 @@ spec:
       rules:
         - sequence:
           - observe-cert-manager
-          - cert-manager-webhook
+          - observe-cert-manager-webhook
           - opentelemetry
           - observe-jaeger
           - observe-namespace-robot-shop
