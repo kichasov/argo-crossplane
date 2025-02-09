@@ -8,6 +8,28 @@ spec:
     kind: XCassandra
   mode: Pipeline
   pipeline:
+  - step: patch-and-transform-observable
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: cassandra-prerequisite
+        base:
+          apiVersion: kubernetes.crossplane.io/v1alpha2
+          kind: Object
+          spec:
+            managementPolicies: ["Observe"]
+            forProvider:
+              manifest:
+                apiVersion: v1
+                kind: Service
+                metadata:
+                  name: cert-manager
+                  namespace: cert-manager
+            providerConfigRef:
+              name: kubernetes-provider
   - step: patch-and-transform
     functionRef:
       name: function-patch-and-transform
@@ -29,9 +51,6 @@ spec:
               wait: true
             providerConfigRef:
               name: helm-provider
-  - step: automatically-detect-readiness-casandra
-    functionRef:
-      name: function-auto-ready
   - step: cassandra-cluster
     functionRef:
       name: function-patch-and-transform
@@ -84,3 +103,14 @@ spec:
   - step: automatically-detect-readiness-cassandra-cluster
     functionRef:
       name: function-auto-ready
+  - step: sequence-creation
+    functionRef:
+      name: function-sequencer
+    input:
+      apiVersion: sequencer.fn.crossplane.io/v1beta1
+      kind: Input
+      rules:
+        - sequence:
+          - cassandra-prerequisite
+          - cassandra
+          - cassandra-cluster
