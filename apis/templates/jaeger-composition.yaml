@@ -8,6 +8,50 @@ spec:
     kind: XJaeger
   mode: Pipeline
   pipeline:
+  - step: patch-and-transform-observable-first
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: jaeger-prerequisite-first
+        base:
+          apiVersion: kubernetes.crossplane.io/v1alpha2
+          kind: Object
+          spec:
+            managementPolicies: ["Observe"]
+            forProvider:
+              manifest:
+                apiVersion: v1
+                kind: Service
+                metadata:
+                  name: cassandra-cluster-dc1-service
+                  namespace: k8ssandra-operator
+            providerConfigRef:
+              name: kubernetes-provider
+  - step: patch-and-transform-observable-second
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: jaeger-prerequisite-second
+        base:
+          apiVersion: kubernetes.crossplane.io/v1alpha2
+          kind: Object
+          spec:
+            managementPolicies: ["Observe"]
+            forProvider:
+              manifest:
+                apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: cassandra-cluster-superuser
+                  namespace: k8ssandra-operator
+            providerConfigRef:
+              name: kubernetes-provider
   - step: patch-and-transform
     functionRef:
       name: function-patch-and-transform
@@ -65,3 +109,14 @@ spec:
   - step: automatically-detect-readiness
     functionRef:
       name: function-auto-ready
+  - step: sequence-creation
+    functionRef:
+      name: function-sequencer
+    input:
+      apiVersion: sequencer.fn.crossplane.io/v1beta1
+      kind: Input
+      rules:
+        - sequence:
+          - jaeger-prerequisite-first
+          - jaeger-prerequisite-second
+          - jaeger
