@@ -8,6 +8,28 @@ spec:
     kind: XOpenTelemetry
   mode: Pipeline
   pipeline:
+  - step: observe-cert-manager
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: observe-cert-manager
+        base:
+          apiVersion: kubernetes.crossplane.io/v1alpha2
+          kind: Object
+          spec:
+            managementPolicies: ["Observe"]
+            forProvider:
+              manifest:
+                apiVersion: v1
+                kind: Service
+                metadata:
+                  name: cert-manager
+                  namespace: cert-manager
+            providerConfigRef:
+              name: kubernetes-provider
   - step: patch-and-transform
     functionRef:
       name: function-patch-and-transform
@@ -35,9 +57,49 @@ spec:
               wait: true
             providerConfigRef:
               name: helm-provider
-  - step: automatically-detect-readiness-opentelemetry
+  - step: observe-jaeger
     functionRef:
-      name: function-auto-ready
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: observe-jaeger
+        base:
+          apiVersion: kubernetes.crossplane.io/v1alpha2
+          kind: Object
+          spec:
+            managementPolicies: ["Observe"]
+            forProvider:
+              manifest:
+                apiVersion: v1
+                kind: Service
+                metadata:
+                  name: jaeger-collector
+                  namespace: jaeger
+            providerConfigRef:
+              name: kubernetes-provider
+  - step: observe-namespace-robot-shop
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: observe-namespace-robot-shop
+        base:
+          apiVersion: kubernetes.crossplane.io/v1alpha2
+          kind: Object
+          spec:
+            managementPolicies: ["Observe"]
+            forProvider:
+              manifest:
+                apiVersion: v1
+                kind: Namespace
+                metadata:
+                  name: robot-shop
+            providerConfigRef:
+              name: kubernetes-provider
   - step: opentelemetry-cluster
     functionRef:
       name: function-patch-and-transform
@@ -100,34 +162,6 @@ spec:
                           exporters: [prometheusremotewrite, debug]
             providerConfigRef:
               name: kubernetes-provider
-  - step: automatically-detect-readiness-opentelemetry-cluster
-    functionRef:
-      name: function-auto-ready
-  - step: robot-shop-namespace
-    functionRef:
-      name: function-patch-and-transform
-    input:
-      apiVersion: pt.fn.crossplane.io/v1beta1
-      kind: Resources
-      resources:
-      - name: robot-shop-namespace
-        base:
-          apiVersion: kubernetes.crossplane.io/v1alpha2
-          kind: Object
-          spec:
-            forProvider:
-              manifest:
-                apiVersion: v1
-                kind: Namespace
-                metadata:
-                  name: robot-shop
-                  labels:
-                    example: "true"
-            providerConfigRef:
-              name: kubernetes-provider
-  - step: automatically-detect-readiness-robot-shop-namespace
-    functionRef:
-      name: function-auto-ready
   - step: opentelemetry-collector
     functionRef:
       name: function-patch-and-transform
@@ -162,3 +196,17 @@ spec:
   - step: automatically-detect-readiness-opentelemetry-collector
     functionRef:
       name: function-auto-ready
+  - step: sequence-creation
+    functionRef:
+      name: function-sequencer
+    input:
+      apiVersion: sequencer.fn.crossplane.io/v1beta1
+      kind: Input
+      rules:
+        - sequence:
+          - observe-cert-manager
+          - opentelemetry
+          - observe-jaeger
+          - observe-namespace-robot-shop
+          - opentelemetry-cluster
+          - opentelemetry-collector
