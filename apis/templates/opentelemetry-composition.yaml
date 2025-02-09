@@ -30,14 +30,14 @@ spec:
                   namespace: cert-manager
             providerConfigRef:
               name: kubernetes-provider
-  - step: observe-cert-manager-webhook
+  - step: observe-webhook
     functionRef:
       name: function-patch-and-transform
     input:
       apiVersion: pt.fn.crossplane.io/v1beta1
       kind: Resources
       resources:
-      - name: observe-cert-manager-webhook
+      - name: observe-webhook
         base:
           apiVersion: kubernetes.crossplane.io/v1alpha2
           kind: Object
@@ -227,7 +227,7 @@ spec:
       rules:
         - sequence:
           - observe-cert-manager
-          - observe-cert-manager-webhook
+          - observe-webhook
           - opentelemetry
           - observe-jaeger
           - observe-namespace-robot-shop
