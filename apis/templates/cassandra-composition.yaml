@@ -8,14 +8,14 @@ spec:
     kind: XCassandra
   mode: Pipeline
   pipeline:
-  - step: patch-and-transform-observable
+  - step: observe-cert-manager
     functionRef:
       name: function-patch-and-transform
     input:
       apiVersion: pt.fn.crossplane.io/v1beta1
       kind: Resources
       resources:
-      - name: cassandra-prerequisite
+      - name: observe-cert-manager
         base:
           apiVersion: kubernetes.crossplane.io/v1alpha2
           kind: Object
@@ -27,6 +27,29 @@ spec:
                 kind: Service
                 metadata:
                   name: cert-manager
+                  namespace: cert-manager
+            providerConfigRef:
+              name: kubernetes-provider
+  pipeline:
+  - step: observe-cert-manager-webhook
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: observe-cert-manager-webhook
+        base:
+          apiVersion: kubernetes.crossplane.io/v1alpha2
+          kind: Object
+          spec:
+            managementPolicies: ["Observe"]
+            forProvider:
+              manifest:
+                apiVersion: v1
+                kind: Service
+                metadata:
+                  name: cert-manager-webhook
                   namespace: cert-manager
             providerConfigRef:
               name: kubernetes-provider
@@ -111,6 +134,7 @@ spec:
       kind: Input
       rules:
         - sequence:
-          - cassandra-prerequisite
+          - observe-cert-manager
+          - observe-cert-manager-webhook
           - cassandra
           - cassandra-cluster
