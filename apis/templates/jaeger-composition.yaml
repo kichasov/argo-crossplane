@@ -91,6 +91,8 @@ spec:
                   value: cassandra
                 - name: cassandraSchemaJob.existingSecret
                   value: "false"
+                - name: cassandraSchemaJob.datacenter
+                  value: "dc1"
                 - name: cassandraSchemaJob.username
                   valueFrom:
                     secretKeyRef: 
