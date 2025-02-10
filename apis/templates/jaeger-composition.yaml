@@ -93,6 +93,10 @@ spec:
                   value: "false"
                 - name: cassandraSchemaJob.datacenter
                   value: "dc1"
+                - name: readinessProbe.resources.limits.memory
+                  value: "100Mi"
+                - name: readinessProbe.resources.limits.cpu
+                  value: "100m"
                 - name: cassandraSchemaJob.username
                   valueFrom:
                     secretKeyRef: 
