@@ -94,8 +94,12 @@ spec:
                 - name: cassandraSchemaJob.datacenter
                   value: "dc1"
                 - name: readinessProbe.resources.limits.memory
-                  value: "100Mi"
+                  value: "200Mi"
                 - name: readinessProbe.resources.limits.cpu
+                  value: "200m"
+                - name: readinessProbe.resources.requests.memory
+                  value: "100Mi"
+                - name: readinessProbe.resources.requests.cpu
                   value: "100m"
                 - name: cassandraSchemaJob.username
                   valueFrom:
